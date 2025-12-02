@@ -1,5 +1,6 @@
 import React from 'react';
 import './SuggestionCard.css';
+import Icon_remove from '../assets/icon_remove.png';
 
 export default function SuggestionCard({ profile, name, timeAgo, content, onDelete }) {
   return (
@@ -11,7 +12,7 @@ export default function SuggestionCard({ profile, name, timeAgo, content, onDele
           <div className="time">{timeAgo}</div>
         </div>
         <button className="delete-btn" onClick={onDelete}>
-          <img src="/icon_remove.png" alt="뒤로가기" />
+          <img src = {Icon_remove} alt="뒤로가기" />
         </button>
       </div>
       <div className="card-content">

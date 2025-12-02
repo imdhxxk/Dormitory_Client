@@ -551,7 +551,7 @@ const Home = () => {
         </NavItem>
         
         {/* 3. 건의사항 */}
-        <NavItem>
+        <NavItem onClick={() => navigate("/suggestion")}>
           <IconWrapper>
             <Suggestimg></Suggestimg>
           </IconWrapper>

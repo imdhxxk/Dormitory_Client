@@ -3,6 +3,9 @@ import SuggestionCard from './SuggestionCard';
 import './SuggestionPage.css';
 import { useNavigate } from "react-router-dom";
 
+import Icon_edit from '../assets/icon_edit.png';
+import Icon_back from '../assets/icon_back.png';
+
 const dummySuggestions = [
   {
     id: 1,
@@ -43,36 +46,38 @@ const dummySuggestions = [
 
 export default function SuggestionPage() {
   const navigate = useNavigate();
+
+  // 건의사항 삭제 함수
   const handleDelete = (id) => {
     console.log('삭제할 건의사항 id:', id);
-    // 나중에 Supabase 삭제 API 연결
+    // TODO: Supabase 삭제 API 연결
   };
 
   return (
     <div className="suggestion-page">
+      {/* 헤더 */}
       <div className="header">
-        {/* 뒤로가기 */}
-        <button className="back-btn">
-            <img src="/icon_back.png" alt="뒤로가기" />
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <img src = {Icon_back} alt="뒤로가기" />
         </button>
 
         <h1>건의사항</h1>
 
-        {/* 오른쪽 수정 */}
-        <button className="edit-btn" onClick={() => navigate("/write")}>
-            <img src="/icon_edit.png" alt="수정" />
+        <button className="edit-btn" onClick={() => navigate("/suggestion/write")}>
+          <img src = {Icon_edit} alt="작성" />
         </button>
-    </div>
+      </div>
 
+      {/* 건의사항 리스트 */}
       <div className="suggestion-list">
-        {dummySuggestions.map(s => (
+        {dummySuggestions.map(suggestion => (
           <SuggestionCard
-            key={s.id}
-            profile={s.profile}
-            name={s.name}
-            timeAgo={s.timeAgo}
-            content={s.content}
-            onDelete={() => handleDelete(s.id)}
+            key={suggestion.id}
+            profile={suggestion.profile}
+            name={suggestion.name}
+            timeAgo={suggestion.timeAgo}
+            content={suggestion.content}
+            onDelete={() => handleDelete(suggestion.id)}
           />
         ))}
       </div>
