@@ -35,7 +35,7 @@ export default function NoticeList({ notices }) {
             <NoticeItem key={n.id} onClick={() => handleClick(n.id)} isLast={idx === noticeList.length - 1}>
               <ItemRow>
                 <NoticeTitle>{n.title}</NoticeTitle>
-                {n.isNew && <NewDot />}
+                
               </ItemRow>
               <NoticeDate>{n.date}</NoticeDate>
             </NoticeItem>
