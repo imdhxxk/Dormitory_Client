@@ -7,7 +7,8 @@ import Suggest from '../assets/suggest.png';
 import Morning from '../assets/morning.png';
 import Arrow from '../assets/arrow.png';
 import Qr from '../assets/qr.png';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 import './Home.css';
 
 const COLORS = {
@@ -18,6 +19,7 @@ const COLORS = {
   cardGreen: '#2ec757',
   cardLightGreen: '#90df99',
 };
+
 
 const SLIDER_CARDS = [
   { type: 'main', time: '12분전', userName: '김아람샘', phone: '010.1234.1234', title: '수능기간 휴관 안내', active: true },
@@ -48,45 +50,90 @@ useEffect(() => {
   }
 }, [newSong, navigate, location.pathname]);
 
+    // (유저 이름 + 프로필)
+    const [nameOnly, setNameOnly] = useState("");
+    const [profileImage, setProfileImage] = useState("");
+    
 
-  const handleScroll = () => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const scrollLeft = slider.scrollLeft;
-    const slideWidth = 267 + 12;
-    const index = Math.round(scrollLeft / slideWidth);
-    setActiveIndex(index);
-  };
+    useEffect(() => {
+        if (newSong) {
+          setMusicList(prev => [...prev, newSong]);
+          navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [newSong, navigate, location.pathname]);
 
-  return (
-    <div className="container">
-      <header className="header">
-        <div className="headerment">
-          <p className="name">김미림님,</p>
-          <p className="greeting">오늘 하루도 힘내세요</p>
-        </div>
-        <div className="headerIcons">
-          <div
-            className="notificationBell"
-            style={{ backgroundImage: `url(${Bell})` }}
+    // Supabase 유저 정보 가져오기
+    useEffect(() => {
+      const loadUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const fullName = user.user_metadata?.full_name ?? "";
+          
+          const parsedName = fullName.includes("_")
+            ? fullName.split("_")[1]
+            : fullName;
+  
+          setNameOnly(parsedName);
+          const profilePic =
+          user.identities?.[0]?.identity_data?.picture ||
+          user.user_metadata?.avatar_url ||
+          "";
+
+        setProfileImage(profilePic);
+        }
+      };
+  
+      loadUser();
+    }, []);
+
+    const handleScroll = () => {
+        const slider = sliderRef.current;
+        if (!slider) return;
+
+        const scrollLeft = slider.scrollLeft;
+        const slideWidth = 267 + 12; 
+        const index = Math.round(scrollLeft / slideWidth);
+        setActiveIndex(index);
+    };
+
+    return (
+    <Container>
+      <Header>
+        <Headerment>
+            <Name>{nameOnly}님,</Name>
+            <Greeting>오늘 하루도 힘내세요</Greeting>
+        </Headerment>
+        <HeaderIcons>
+          <NotificationBell></NotificationBell>
+          <ProfileCircle 
+            src={profileImage || Profile} // Profile은 이미 import 되어 있음
+            alt="Profile"
+            referrerPolicy="no-referrer"
           />
-          <div className="profileCircle" style={{ backgroundImage: `url(${Profile})` }} />
-        </div>
-      </header>
+        </HeaderIcons>
+      </Header>
 
-      <section className="sliderSection">
-        <div className="sliderWrapper" ref={sliderRef} onScroll={handleScroll}>
+      {/* 2. 슬라이더 */}
+      <SliderSection>
+        <SliderWrapper  ref={sliderRef} onScroll={handleScroll}>
           {SLIDER_CARDS.map((card, index) => (
-            <div className="sliderCard" key={index}>
-              <p className="timeAgo">{card.time}</p>
-              <div className="userInfo">
-                <div className="userAvatar" style={{ backgroundImage: `url(${Profile})` }} />
-                <div className="userText">
-                  <p className="userName">{card.userName}</p>
-                  <p className="userPhone">{card.phone}</p>
-                </div>
-              </div>
-              <p className="cardTitle">
+            <SliderCard key={index}>
+              {/* 1. 상단 뱃지 */}
+              <TimeAgo>{card.time}</TimeAgo>
+              
+              {/* 2. 중간 정보 */}
+              <UserInfo>
+                    <UserAvatar src={profileImage || null} />
+
+                    <UserText>
+                        <UserName>{card.userName}</UserName>
+                        <UserPhone>{card.phone}</UserPhone>
+                    </UserText>
+              </UserInfo>
+              
+              {/* 3. 하단 제목 */}
+              <CardTitle>
                 {card.title}
                 <span className="arrowIcon">〉</span>
               </p>
