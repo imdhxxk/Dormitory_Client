@@ -53,7 +53,7 @@ export const DetailTop = styled.div`
     margin-bottom: 12px;
   }
 `;
-
+ 
 export const DetailDate = styled.p`
   font-size: 13px;
   color: #999;

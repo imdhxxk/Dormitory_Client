@@ -119,7 +119,7 @@ export const ConfirmButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
+`; 
 
 export const EditButton = styled.button`
   width: 24px;

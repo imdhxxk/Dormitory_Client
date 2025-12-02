@@ -5,7 +5,6 @@ import {
   DetailContent, DetailTop, DetailDate
 } from "./noticeDetail.styles";
 
-
 // NoticeDetail.jsx
 export default function NoticeDetail({ notices }) {
   const { id } = useParams();
