@@ -6,10 +6,6 @@ import noticedata from "./data/notice.json";
 
 function App() {
   const [notices, setNotices] = useState(noticedata);
-
-  const markAsRead = (id) => {
-    setNotices(notices.map(n => n.id === id ? {...n, isNew: false} : n));
-  };
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/notices" />} />
@@ -18,7 +14,7 @@ function App() {
 
 <Route 
         path="/notices/:id" 
-        element={<NoticeDetail notices={notices} markAsRead={markAsRead} />} 
+        element={<NoticeDetail notices={notices} />} 
       />    </Routes>
   );
 }

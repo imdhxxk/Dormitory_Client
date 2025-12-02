@@ -65,7 +65,7 @@ export const DetailDate = styled.p`
 `;
 
 // NoticeDetail.jsx
-export default function NoticeDetail({ notices, markAsRead }) {
+export default function NoticeDetail({ notices }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -73,9 +73,7 @@ export default function NoticeDetail({ notices, markAsRead }) {
 
   if (!notice) return <div>존재하지 않는 공지입니다.</div>;
 
-  // 상세 페이지 렌더 시 점을 없애기
-  markAsRead(notice.id);
-
+  
   return (
     <DetailContainer>
       <DetailHeader>
