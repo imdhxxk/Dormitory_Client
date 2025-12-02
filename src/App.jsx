@@ -1,22 +1,31 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Song from './pages/Song';
+//import Meal from './pages/Meal';
+//import Test from './pages/Test';
+import Login from "./pages/Login";
+import Home from './pages/Home';
+import SuggestionPage from './pages/SuggestionPage';
+import SuggestionWritePage from './pages/SuggestionWritePage'; // 작성 페이지
 import NoticeList from "./pages/noticeList";
 import NoticeDetail from "./pages/noticeDetail";
 import noticedata from "./data/notice.json";
 
-function App() {
-  const [notices, setNotices] = useState(noticedata);
+const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/notices" />} />
-
-      <Route path="/notices" element={<NoticeList notices={noticedata} />} />
-
-<Route 
-        path="/notices/:id" 
-        element={<NoticeDetail notices={notices} />} 
-      />    </Routes>
+      <Routes>
+        <Route path="/song" element={<Song />} />
+        {/*<Route path="/Meal" element={<Meal />} />
+        <Route path="/test" element={<Test />} />*/}
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/suggestion" element={<SuggestionPage />} />
+        <Route path="/suggestion/write" element={<SuggestionWritePage />} />
+        <Route path="/noticeList" element={<NoticeList />} />
+        <Route path="/notices/:id" element={<NoticeDetail />} />
+      </Routes>
   );
-}
+};
 
-export default App;
+export default App; 
