@@ -9,7 +9,7 @@ import Morning from '../assets/morning.png';
 import Arrow from '../assets/arrow.png';
 import Qr from '../assets/qr.png';
 import { useLocation,useNavigate } from "react-router-dom";
-
+import { supabase } from "../supabaseClient";
 
 const COLORS = {
   primary: '#4CAF50', // 초록색 강조
@@ -27,6 +27,7 @@ const Container = styled.div`
     width: 393px;
     height: 1018px;
 `;
+
 
 // 2. 헤더 섹션
 const Header = styled.header`
@@ -78,12 +79,13 @@ const NotificationBell = styled.div`
     background-image: url(${Bell});
 `;
 
-const ProfileCircle = styled.div`
+const ProfileCircle = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: #cccccc;
   border: 1px solid #eeeeee;
+  object-fit: cover;
 `;
 
 // 3. 슬라이더 섹션
@@ -150,13 +152,14 @@ const UserInfo = styled.div`
 
 // 아바타 스타일
 const UserAvatar = styled.div`
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background-color: #ffffff; /* 흰색 아바타 배경 */
-    flex-shrink: 0;
-    background-image: url(${Profile});
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-image: ${(props) => (props.src ? `url(${props.src})` : 'none')};
 `;
+
 
 // 이름과 번호 텍스트를 감싸는 컨테이너
 const UserText = styled.div`
@@ -455,7 +458,6 @@ const MEAL = {
   menu: '귀리밥, 애호박찌개 10), 소보로메추리알조림 13), 배추김치 (9), 브로콜리&초장 13)'
 };
 
-
 const Home = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -465,38 +467,68 @@ const Home = () => {
 
     const [musicList, setMusicList] = useState([]);
 
+    // (유저 이름 + 프로필)
+    const [nameOnly, setNameOnly] = useState("");
+    const [profileImage, setProfileImage] = useState("");
+    
+
     useEffect(() => {
         if (newSong) {
           setMusicList(prev => [...prev, newSong]);
           navigate(location.pathname, { replace: true, state: {} });
         }
-      }, [newSong, navigate, location.pathname]);
+    }, [newSong, navigate, location.pathname]);
 
+    // Supabase 유저 정보 가져오기
+    useEffect(() => {
+      const loadUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const fullName = user.user_metadata?.full_name ?? "";
+          
+          const parsedName = fullName.includes("_")
+            ? fullName.split("_")[1]
+            : fullName;
+  
+          setNameOnly(parsedName);
+          const profilePic =
+          user.identities?.[0]?.identity_data?.picture ||
+          user.user_metadata?.avatar_url ||
+          "";
 
-      const handleScroll = () => {
+          console.log("Profile Image URL:", profilePic); // 👈 디버깅용
+        setProfileImage(profilePic);
+        }
+      };
+  
+      loadUser();
+    }, []);
+
+    const handleScroll = () => {
         const slider = sliderRef.current;
         if (!slider) return;
-    
-        // 현재 스크롤 위치
+
         const scrollLeft = slider.scrollLeft;
-    
-        // 슬라이드 하나의 너비 + margin
-        const slideWidth = 267 + 12; // SliderCard width + marginRight
-    
-        // 현재 activeIndex 계산
+        const slideWidth = 267 + 12; 
         const index = Math.round(scrollLeft / slideWidth);
         setActiveIndex(index);
-      };
-  return (
+    };
+
+    return (
     <Container>
       <Header>
         <Headerment>
-            <Name>김미림님,</Name>
+            <Name>{nameOnly}님,</Name>
             <Greeting>오늘 하루도 힘내세요</Greeting>
         </Headerment>
         <HeaderIcons>
           <NotificationBell></NotificationBell>
-          <ProfileCircle />
+          <ProfileCircle 
+            src={profileImage || Profile} // Profile은 이미 import 되어 있음
+            alt="Profile"
+            referrerPolicy="no-referrer"
+          />
         </HeaderIcons>
       </Header>
 
@@ -510,7 +542,8 @@ const Home = () => {
               
               {/* 2. 중간 정보 */}
               <UserInfo>
-                    <UserAvatar />
+                    <UserAvatar src={profileImage || null} />
+
                     <UserText>
                         <UserName>{card.userName}</UserName>
                         <UserPhone>{card.phone}</UserPhone>
